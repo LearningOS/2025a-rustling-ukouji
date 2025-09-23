@@ -27,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
 // integers, an array of three integers, and a slice of integers.
@@ -41,6 +39,16 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        if !(0 <= tuple.0 && tuple.0 <= 255 &&  
+             0 <= tuple.1 && tuple.1 <= 255 && 
+             0 <= tuple.2 && tuple.2 <= 255) {
+            return Err(IntoColorError::IntConversion);
+        }
+        Ok(Color {
+            red: tuple.0 as u8,
+            green: tuple.1 as u8,
+            blue: tuple.2 as u8
+        })
     }
 }
 
@@ -48,6 +56,24 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let mut color = Color {
+            red: 0,
+            green: 0,
+            blue: 0
+        };
+        for (i, &val) in arr.iter().enumerate() {
+            if val < 0 || val > 255 {
+                return Err(IntoColorError::IntConversion);
+            }
+            if i == 0 {
+                color.red = val as u8;
+            } else if i == 1 {
+                color.green = val as u8;
+            } else if i == 2 {
+                color.blue = val as u8;
+            }
+        }
+        Ok(color)
     }
 }
 
@@ -55,6 +81,29 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        let mut color = Color {
+            red: 0,
+            green: 0,
+            blue: 0
+        };
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        for (i, &val) in slice.iter().enumerate() {
+            if val < 0 || val > 255 {
+                return Err(IntoColorError::IntConversion);
+            }
+            if i == 0 {
+                color.red = val as u8;
+            } else if i == 1 {
+                color.green = val as u8;
+            } else if i == 2 {
+                color.blue = val as u8;
+            } else {
+                return Err(IntoColorError::BadLen);
+            }
+        }
+        Ok(color)
     }
 }
 
