@@ -3,11 +3,41 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T: PartialOrd+Copy>(array: &mut [T]){
+    // A merge sort
+    if array.len() == 1 {
+        return;
+    }
+    if array.len() == 2 {
+        if array[0] > array[1] {
+            array.swap(0, 1);
+        }
+        return
+    }
+	let mid = array.len() / 2;
+    sort(&mut array[..mid]);
+    sort(&mut array[mid..]);
+
+    // Merge the two sub lists
+    let mut left = 0;
+    let mut right = mid;
+
+    let mut sorted = vec![array[0]; array.len()];
+    for i in 0..array.len() {
+        if right < array.len() && (left == mid || array[left] > array[right]) {
+            sorted[i] = array[right];
+            right += 1;
+        } else {
+            sorted[i] = array[left];
+            left += 1;
+        }
+    }
+    for i in 0..array.len() {
+        array[i] = sorted[i];
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
