@@ -2,7 +2,6 @@
 	graph
 	This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -28,21 +27,41 @@ impl Graph for UndirectedGraph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
         &self.adjacency_table
     }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+   fn add_edge(&mut self, edge: (&str, &str, i32)) {
+        let (from, to, weight) = edge;
+
+        self.add_node(from);
+        self.add_node(to);
+        
+        let adj_table = self.adjacency_table_mutable();
+
+        if let Some(neighbors) = adj_table.get_mut(from) {
+            if !neighbors.iter().any(|(n, _)| n == to) {
+                neighbors.push((to.to_string(), weight));
+            }
+        }
+        
+        if let Some(neighbors) = adj_table.get_mut(to) {
+            if !neighbors.iter().any(|(n, _)| n == from) {
+                neighbors.push((from.to_string(), weight));
+            }
+        }
     }
 }
 pub trait Graph {
     fn new() -> Self;
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
-    fn add_node(&mut self, node: &str) -> bool {
-        //TODO
-		true
+   fn add_node(&mut self, node: &str) -> bool {
+        let adj_table = self.adjacency_table_mutable();
+        if adj_table.contains_key(node) {
+            false
+        } else {
+            adj_table.insert(node.to_string(), Vec::new());
+            true
+        }
     }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+    fn add_edge(&mut self, edge: (&str, &str, i32));
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
     }
